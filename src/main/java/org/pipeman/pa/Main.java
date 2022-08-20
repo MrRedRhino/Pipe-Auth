@@ -22,7 +22,7 @@ public class Main {
         On.get("/").plain("nonsense");
         On.get("/login").html(Files.readString(CONFIG.getConfig().loginHtml));
 
-        On.get("/api/is-authorized").json(Api::getUserIfAuthorized);
+        On.get("/api/is-authorized").json(Api::isAuthorized);
         On.get("/api/login").json(Api::login);
         On.get("/api/logout").json(Api::logout);
     }

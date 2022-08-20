@@ -13,7 +13,7 @@ import java.util.Random;
 public class Api {
     private static final Random random = new Random();
 
-    public static Object getUserIfAuthorized(Req req, Resp resp) throws InterruptedException {
+    public static Object isAuthorized(Req req, Resp resp) throws InterruptedException {
         String originalPath = req.header("X-Original-URI", null);
         String token = req.cookie("token", req.header("token", null));
 
