@@ -133,7 +133,7 @@ any path on any domain.
 
 - Only the first matching domain is taken into account to check if the path matches.
 - Use "**" to block all subdirectories, "*" only blocks *one* directory \
-  "!/private/" would only block "/private/asd/" or "/private/hello.txt" but not "/private/asd/hello.txt"
+  "!/private/\*" would only block "/private/asd/" or "/private/hello.txt" but not "/private/asd/hello.txt"
 - If no domain or pattern matches, access is denied
 
 ---
