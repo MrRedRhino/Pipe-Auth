@@ -1,7 +1,7 @@
 package org.pipeman.pa.login;
 
 import org.pipeman.pa.Main;
-import org.pipeman.pa.users.May;
+import org.pipeman.pa.permissions.May;
 import org.pipeman.pa.users.User;
 import org.pipeman.pa.users.Users;
 import org.rapidoid.http.Req;
@@ -14,13 +14,14 @@ public class Api {
     private static final Random random = new Random();
 
     public static Object isAuthorized(Req req, Resp resp) throws InterruptedException {
-        String originalPath = req.header("X-Original-URI", null);
+        String path = req.header("X-Original-URI", null);
+        String domain = req.header("X-Original-Domain", null);
         String token = req.cookie("token", req.header("token", null));
 
-        boolean authorized = May.access(originalPath, Users.getDefaultUserAllowedPaths(), Users.getDefaultUserDeniedPaths());
+        boolean authorized = May.access(path, domain, Users.getDefaultUserPermissions());
         User user = getUserIfAuthorized(token);
         if (user != null) {
-            authorized = May.access(originalPath, user.allowedPaths(), user.deniedPaths());
+            authorized = May.access(path, domain, user.permissions());
         }
 
         Thread.sleep(30 + random.nextInt(-20, 20));

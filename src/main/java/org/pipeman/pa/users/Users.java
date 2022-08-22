@@ -2,6 +2,7 @@ package org.pipeman.pa.users;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.pipeman.pa.permissions.DomainPermission;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,17 +13,11 @@ import java.util.Map;
 public class Users {
     private static final Path usersFile = Path.of("users.json");
     private static Map<String, User> userCache = new HashMap<>();
-    private static String[] defaultUserAllowedPaths;
-    private static String[] defaultUserDeniedPaths;
+    private static DomainPermission[] defaultUserPermissions;
 
-    public static String[] getDefaultUserAllowedPaths() {
-        if (defaultUserAllowedPaths == null) reloadCache();
-        return defaultUserAllowedPaths;
-    }
-
-    public static String[] getDefaultUserDeniedPaths() {
-        if (defaultUserDeniedPaths == null) reloadCache();
-        return defaultUserDeniedPaths;
+    public static DomainPermission[] getDefaultUserPermissions() {
+        if (defaultUserPermissions == null) reloadCache();
+        return defaultUserPermissions;
     }
 
     public static User getUser(String name) {
@@ -43,21 +38,15 @@ public class Users {
             JSONObject file = new JSONObject(fileContent.isBlank() ? "{}" : fileContent);
 
             if (file.has("default")) {
-                JSONObject defaultUser = file.getJSONObject("default");
-                JSONArray defaultAllowedPaths = defaultUser.getJSONArray("allowed-paths");
-                JSONArray defaultDeniedPaths = defaultUser.getJSONArray("denied-paths");
+                JSONArray defaultUserPerms = file.getJSONArray("default");
 
-                defaultUserAllowedPaths = new String[defaultAllowedPaths.length()];
-                for (int i = 0; i < defaultAllowedPaths.length(); i++) {
-                    defaultUserAllowedPaths[i] = (String) defaultAllowedPaths.get(i);
-                }
-
-                defaultUserDeniedPaths = new String[defaultDeniedPaths.length()];
-                for (int i = 0; i < defaultDeniedPaths.length(); i++) {
-                    defaultUserDeniedPaths[i] = (String) defaultDeniedPaths.get(i);
+                defaultUserPermissions = new DomainPermission[defaultUserPerms.length()];
+                for (int i = 0; i < defaultUserPerms.length(); i++) {
+                    JSONObject perm = defaultUserPerms.getJSONObject(i);
+                    defaultUserPermissions[i] = DomainPermission.from(perm);
                 }
             } else {
-                defaultUserAllowedPaths = new String[0];
+                defaultUserPermissions = new DomainPermission[0];
                 file.put("default", new JSONArray());
             }
 
@@ -80,10 +69,7 @@ public class Users {
     public static void save() {
         JSONObject out = new JSONObject();
 
-        out.put("default", new JSONObject(Map.of(
-                "allowed-paths", defaultUserAllowedPaths,
-                "denied-paths", defaultUserDeniedPaths
-        )));
+        out.put("default", new JSONArray(defaultUserPermissions));
 
         JSONArray users = new JSONArray();
         for (User user : userCache.values()) {
@@ -102,28 +88,22 @@ public class Users {
     private static User deserializeUser(JSONObject object) {
         String name = object.getString("name");
         String password = object.getString("password");
-        JSONArray allowedPaths = object.getJSONArray("allowed-paths");
-        JSONArray deniedPaths = object.getJSONArray("denied-paths");
         long lastTokenUpdate = object.getLong("last-token-update");
 
-        String[] aAllowedPaths = new String[allowedPaths.length()];
-        for (int i = 0; i < allowedPaths.length(); i++) {
-            aAllowedPaths[i] = (String) allowedPaths.get(i);
-        }
-        String[] aDeniedPaths = new String[deniedPaths.length()];
-        for (int i = 0; i < deniedPaths.length(); i++) {
-            aDeniedPaths[i] = (String) deniedPaths.get(i);
+        JSONArray domainPermissions = object.getJSONArray("domain-permissions");
+        DomainPermission[] perms = new DomainPermission[domainPermissions.length()];
+        for (int i = 0; i < perms.length; i++) {
+            perms[i] = DomainPermission.from(domainPermissions.getJSONObject(i));
         }
 
-        return new User(name, password, aAllowedPaths, aDeniedPaths, lastTokenUpdate);
+        return new User(name, password, perms, lastTokenUpdate);
     }
 
     private static JSONObject serialize(User user) {
         return new JSONObject()
                 .put("name", user.name())
                 .put("password", user.password())
-                .put("allowed-paths", user.allowedPaths())
-                .put("denied-paths", user.deniedPaths())
+                .put("domain-permissions", user.permissions())
                 .put("last-token-update", user.lastTokenUpdate());
     }
 }

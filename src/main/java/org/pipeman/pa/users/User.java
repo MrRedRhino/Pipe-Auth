@@ -1,17 +1,17 @@
 package org.pipeman.pa.users;
 
+import org.pipeman.pa.permissions.DomainPermission;
+
 public final class User {
     private final String name;
     private final String password;
-    private final String[] allowedPaths;
-    private final String[] deniedPaths;
+    private final DomainPermission[] permissions;
     private long lastTokenUpdate;
 
-    public User(String name, String password, String[] allowedPaths, String[] deniedPaths, long lastTokenUpdate) {
+    public User(String name, String password, DomainPermission[] permissions, long lastTokenUpdate) {
         this.name = name;
         this.password = password;
-        this.allowedPaths = allowedPaths;
-        this.deniedPaths = deniedPaths;
+        this.permissions = permissions;
         this.lastTokenUpdate = lastTokenUpdate;
     }
 
@@ -19,9 +19,7 @@ public final class User {
 
     public String password() {return password;}
 
-    public String[] allowedPaths() {return allowedPaths;}
-
-    public String[] deniedPaths() {return deniedPaths;}
+    public DomainPermission[] permissions() {return permissions;}
 
     public long lastTokenUpdate() {return lastTokenUpdate;}
 
