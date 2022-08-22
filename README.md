@@ -143,10 +143,10 @@ any path on any domain.
 | Example          | Description                                                            |
 |------------------|------------------------------------------------------------------------|
 | *.pipe           | Matches a path that represents a file name ending in .pipe             |
-| *.*              | Matches file names containing a dot                                    |
+| \*.\*            | Matches file names containing a dot                                    |
 | *.{pipeman,auth} | Matches file names ending with .pipeman or .auth                       |
 | foo.?            | Matches file names starting with foo. and a single character extension |
-| /home/*/*        | Matches /home/gus/data                                                 |
+| /home/\*/\*      | Matches /home/gus/data                                                 |
 | /home/**         | Matches /home/gus and /home/gus/data on UNIX platforms                 |
 
 The following rules are used to interpret glob patterns:
