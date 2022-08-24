@@ -63,6 +63,18 @@
             <artifactId>json</artifactId>
             <version>20220320</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.vladimir-bukhtoyarov</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>7.6.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli-shell-jline3</artifactId>
+            <version>4.6.3</version>
+        </dependency>
     </dependencies>
 
     <build>

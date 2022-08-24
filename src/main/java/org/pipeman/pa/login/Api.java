@@ -19,9 +19,11 @@ public class Api {
         String token = req.cookie("token", req.header("token", null));
 
         boolean authorized = May.access(path, domain, Users.getDefaultUserPermissions());
-        User user = getUserIfAuthorized(token);
-        if (user != null) {
-            authorized = May.access(path, domain, user.permissions());
+        if (!authorized) {
+            User user = getUserIfAuthorized(token);
+            if (user != null) {
+                authorized = May.access(path, domain, user.permissions());
+            }
         }
 
         Thread.sleep(30 + random.nextInt(-20, 20));

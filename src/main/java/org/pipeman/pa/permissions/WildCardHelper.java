@@ -7,6 +7,7 @@ public class WildCardHelper {
     private static final FileSystem FS = FileSystems.getDefault();
 
     public static boolean matchesDomain(String domain, String matcher) {
+        if (domain == null || matcher == null) return false;
         domain = domain.replace('.', '/');
         matcher = matcher.replace('.', '/');
 
@@ -16,11 +17,6 @@ public class WildCardHelper {
     public static boolean matchesPath(String path, String matcher) {
         return FS.getPathMatcher("glob:" + matcher).matches(DebloatedPath.of(path));
     }
-
-    public static void main(String[] args) {
-        System.out.println(matchesPath("/!!a/", "/!(private,!a)/"));
-    }
-
 
     private record DebloatedPath(String path) implements Path {
 
