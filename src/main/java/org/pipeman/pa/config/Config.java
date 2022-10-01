@@ -1,19 +1,17 @@
 package org.pipeman.pa.config;
 
-import java.nio.file.Path;
-import java.util.Properties;
+import org.pipeman.pconf.AbstractConfig;
 
-public class Config extends ConfigHelper {
+import java.nio.file.Path;
+
+public class Config extends AbstractConfig {
     public final String tokenEncryptorPassword = this.get("token-encryptor-password", "");
     public final String cookieDomain = this.get("cookie-domain", "");
     public final Path loginHtml = this.get("login-html", Path.of("static", "login.html"));
+    public final int serverPort = this.get("server-port", 14000);
 
-
-    public Config(Properties properties) {
-        super(properties);
-    }
-
-    public static Config fromFile(Path path) {
-        return new Config(loadFromFile(path));
+    public Config(String file) {
+        super(file);
+        store(Path.of(file), "");
     }
 }

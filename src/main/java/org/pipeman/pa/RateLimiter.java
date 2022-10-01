@@ -9,12 +9,8 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class RatelimitTest {
+public class RateLimiter {
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
-
-    public static void main(String[] args) {
-
-    }
 
     public Bucket resolveBucket(String ip) {
         return buckets.computeIfAbsent(ip, this::newBucket);

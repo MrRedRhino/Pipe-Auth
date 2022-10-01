@@ -21,10 +21,7 @@ public class Users {
     }
 
     public static User getUser(String name) {
-        if (userCache.isEmpty()) {
-            reloadCache();
-        }
-
+        if (userCache.isEmpty()) reloadCache();
         return userCache.get(name);
     }
 
@@ -73,7 +70,7 @@ public class Users {
 
         JSONArray users = new JSONArray();
         for (User user : userCache.values()) {
-            users.put(serialize(user));
+            users.put(user.serialize());
         }
 
         out.put("users", users);
@@ -97,13 +94,5 @@ public class Users {
         }
 
         return new User(name, password, perms, lastTokenUpdate);
-    }
-
-    private static JSONObject serialize(User user) {
-        return new JSONObject()
-                .put("name", user.name())
-                .put("password", user.password())
-                .put("domain-permissions", user.permissions())
-                .put("last-token-update", user.lastTokenUpdate());
     }
 }

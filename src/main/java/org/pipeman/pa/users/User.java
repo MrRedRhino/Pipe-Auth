@@ -1,5 +1,6 @@
 package org.pipeman.pa.users;
 
+import org.json.JSONObject;
 import org.pipeman.pa.permissions.DomainPermission;
 
 public final class User {
@@ -13,6 +14,14 @@ public final class User {
         this.password = password;
         this.permissions = permissions;
         this.lastTokenUpdate = lastTokenUpdate;
+    }
+
+    public JSONObject serialize() {
+        return new JSONObject()
+                .put("name", name())
+                .put("password", password())
+                .put("domain-permissions", permissions())
+                .put("last-token-update", lastTokenUpdate());
     }
 
     public String name() {return name;}

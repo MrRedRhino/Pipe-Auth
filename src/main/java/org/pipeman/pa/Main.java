@@ -1,29 +1,33 @@
 package org.pipeman.pa;
 
-import org.pipeman.pa.config.ConfigProvider;
+import io.javalin.Javalin;
+import org.pipeman.pa.config.Config;
 import org.pipeman.pa.login.Api;
 import org.pipeman.pa.login.Encryptor;
-import org.rapidoid.setup.On;
+import org.pipeman.pconf.ConfigProvider;
 
-import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+
+import static io.javalin.apibuilder.ApiBuilder.get;
+import static io.javalin.apibuilder.ApiBuilder.path;
+
 
 public class Main {
-    public static final ConfigProvider CONFIG = new ConfigProvider(Path.of("config.properties"));
-    public static Encryptor tokenEncryptor;
+    public static final ConfigProvider<Config> CONFIG = ConfigProvider.of("config.properties", Config::new);
+    public static final Encryptor tokenEncryptor = new Encryptor(CONFIG.c().tokenEncryptorPassword);
 
-    public static void main(String[] args) throws IOException {
-        tokenEncryptor = new Encryptor(CONFIG.getConfig().tokenEncryptorPassword);
+    public static void main(String[] args) {
+        Javalin app = Javalin.create(c -> c.showJavalinBanner = false).start(CONFIG.c().serverPort);
 
-        On.port(14000);
-        On.error(Throwable.class).handler((req, resp, error) -> resp.code(500).plain("13"));
+        app.routes(() -> {
+            get("", ctx -> ctx.redirect("/login"));
+            get("login", ctx -> ctx.html(Files.readString(CONFIG.c().loginHtml)));
 
-        On.get("/").plain("nonsense");
-        On.get("/login").html(Files.readString(CONFIG.getConfig().loginHtml));
-
-        On.get("/api/is-authorized").json(Api::isAuthorized);
-        On.get("/api/login").json(Api::login);
-        On.get("/api/logout").json(Api::logout);
+            path("api", () -> {
+                get("is-authorized", Api::isAuthorized);
+                get("login", Api::login);
+                get("logout", Api::logout);
+            });
+        });
     }
 }
