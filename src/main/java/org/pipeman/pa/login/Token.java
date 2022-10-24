@@ -1,20 +1,22 @@
 package org.pipeman.pa.login;
 
-import org.pipeman.pa.Main;
+import org.pipeman.pa.config.Config;
 import org.pipeman.penc.Penc;
 
 import java.util.List;
 
 public record Token(String username, long createdAt, long expiresAt) {
+    private static final Encryptor encryptor = new Encryptor(Config.conf().tokenEncryptorPassword);
+
     public String encode() {
-        return Main.tokenEncryptor.encrypt(Penc.encode(username, String.valueOf(createdAt), String.valueOf(expiresAt)));
+        return encryptor.encrypt(Penc.encode(username, String.valueOf(createdAt), String.valueOf(expiresAt)));
     }
 
     public static Token fromString(String token) {
         if (token == null) return null;
 
         try {
-            List<String> decoded = Penc.decode(Main.tokenEncryptor.decrypt(token));
+            List<String> decoded = Penc.decode(encryptor.decrypt(token));
 
             String name = decoded.get(0);
             long createdAt = Long.parseLong(decoded.get(1));

@@ -3,9 +3,9 @@ package org.pipeman.pa.login;
 import io.github.bucket4j.Bucket;
 import io.javalin.http.Context;
 import io.javalin.http.Cookie;
-import org.pipeman.pa.Main;
 import org.pipeman.pa.RateLimiter;
 import org.pipeman.pa.Utils;
+import org.pipeman.pa.config.Config;
 import org.pipeman.pa.permissions.May;
 import org.pipeman.pa.users.User;
 import org.pipeman.pa.users.Users;
@@ -78,7 +78,7 @@ public class Api {
                 0,
                 false,
                 null,
-                Main.CONFIG.c().cookieDomain,
+                Config.conf().cookieDomain,
                 null)
         );
 
