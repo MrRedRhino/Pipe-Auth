@@ -22,6 +22,6 @@ public class Config extends AbstractConfig {
         super(file);
         store(Path.of(file), "");
 
-        Token.setEncryptorPassword();
+        Token.setEncryptorPassword(tokenEncryptorPassword);
     }
 }

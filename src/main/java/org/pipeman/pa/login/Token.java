@@ -1,6 +1,5 @@
 package org.pipeman.pa.login;
 
-import org.pipeman.pa.config.Config;
 import org.pipeman.penc.Penc;
 
 import java.util.List;
@@ -8,12 +7,8 @@ import java.util.List;
 public record Token(String username, long createdAt, long expiresAt) {
     private static Encryptor encryptor;
 
-    static {
-        setEncryptorPassword();
-    }
-
-    public static void setEncryptorPassword() {
-        encryptor = new Encryptor(Config.conf().tokenEncryptorPassword);
+    public static void setEncryptorPassword(String password) {
+        encryptor = new Encryptor(password);
     }
 
     public String encode() {
