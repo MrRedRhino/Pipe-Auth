@@ -4,7 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.pipeman.pa.permissions.DomainPermission;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -16,51 +15,46 @@ public class Users {
     private static DomainPermission[] defaultUserPermissions;
 
     public static DomainPermission[] getDefaultUserPermissions() {
-        if (defaultUserPermissions == null) reloadCache();
         return defaultUserPermissions;
     }
 
     public static User getUser(String name) {
-        if (userCache.isEmpty()) reloadCache();
         return userCache.get(name);
     }
 
-    public static void reloadCache() {
-        userCache = new HashMap<>();
-        try {
-            //noinspection ResultOfMethodCallIgnored
-            usersFile.toFile().createNewFile();
+    public static void reloadCache() throws Exception {
+        Map<String, User> newUsers = new HashMap<>();
+        //noinspection ResultOfMethodCallIgnored
+        usersFile.toFile().createNewFile();
 
-            String fileContent = Files.readString(usersFile);
-            JSONObject file = new JSONObject(fileContent.isBlank() ? "{}" : fileContent);
+        String fileContent = Files.readString(usersFile);
+        JSONObject file = new JSONObject(fileContent.isBlank() ? "{}" : fileContent);
 
-            if (file.has("default")) {
-                JSONArray defaultUserPerms = file.getJSONArray("default");
+        if (file.has("default")) {
+            JSONArray defaultUserPerms = file.getJSONArray("default");
 
-                defaultUserPermissions = new DomainPermission[defaultUserPerms.length()];
-                for (int i = 0; i < defaultUserPerms.length(); i++) {
-                    JSONObject perm = defaultUserPerms.getJSONObject(i);
-                    defaultUserPermissions[i] = DomainPermission.from(perm);
-                }
-            } else {
-                defaultUserPermissions = new DomainPermission[0];
-                file.put("default", new JSONArray());
+            defaultUserPermissions = new DomainPermission[defaultUserPerms.length()];
+            for (int i = 0; i < defaultUserPerms.length(); i++) {
+                JSONObject perm = defaultUserPerms.getJSONObject(i);
+                defaultUserPermissions[i] = DomainPermission.from(perm);
             }
-
-            if (file.has("users")) {
-                JSONArray users = file.getJSONArray("users");
-                for (Object o : users) {
-                    User user = deserializeUser((JSONObject) o);
-                    userCache.put(user.name(), user);
-                }
-            } else {
-                file.put("users", new JSONArray());
-            }
-
-            Files.writeString(usersFile, file.toString(4));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } else {
+            defaultUserPermissions = new DomainPermission[0];
+            file.put("default", new JSONArray());
         }
+
+        if (file.has("users")) {
+            JSONArray users = file.getJSONArray("users");
+            for (Object o : users) {
+                User user = deserializeUser((JSONObject) o);
+                newUsers.put(user.name(), user);
+            }
+        } else {
+            file.put("users", new JSONArray());
+        }
+
+        Files.writeString(usersFile, file.toString(4));
+        userCache = newUsers;
     }
 
     public static void save() {

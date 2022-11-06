@@ -40,13 +40,10 @@ public class Api {
 
         try {
             Token token = Token.fromString(cookie);
-            if (token == null) return null;
-
-            if (token.expiresAt() < System.currentTimeMillis()) return null;
+            if (token == null || token.expiresAt() < System.currentTimeMillis()) return null;
 
             User user = Users.getUser(token.username());
-            if (user == null) return null;
-            if (user.lastTokenUpdate() > token.createdAt()) return null;
+            if (user == null || user.lastTokenUpdate() > token.createdAt()) return null;
 
             return user;
         } catch (Exception ignored) {
@@ -69,7 +66,6 @@ public class Api {
         long expirationTime = System.currentTimeMillis() + 600_000;
 
         String token = new Token(name, createdAt, expirationTime).encode();
-//        ctx.cookie("token", token + "; Domain=" + Main.CONFIG.c().cookieDomain);
         ctx.cookie(new Cookie("token",
                 token,
                 "/",
