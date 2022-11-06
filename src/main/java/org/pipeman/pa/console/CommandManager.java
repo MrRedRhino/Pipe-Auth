@@ -45,7 +45,7 @@ public class CommandManager {
                 handled = iCommand.execute(Arrays.copyOfRange(split, 1, split.length));
             } catch (Exception ignored) {
             }
-            if (!handled) System.out.println("Unknown command: " + line);
+            if (!handled) System.out.println("Unknown command: " + command);
         }
     }
 
