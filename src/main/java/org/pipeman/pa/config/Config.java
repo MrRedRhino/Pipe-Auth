@@ -1,5 +1,6 @@
 package org.pipeman.pa.config;
 
+import org.pipeman.pa.login.Token;
 import org.pipeman.pconf.AbstractConfig;
 import org.pipeman.pconf.ConfigProvider;
 
@@ -20,5 +21,7 @@ public class Config extends AbstractConfig {
     public Config(String file) {
         super(file);
         store(Path.of(file), "");
+
+        Token.setEncryptorPassword();
     }
 }

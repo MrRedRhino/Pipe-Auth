@@ -6,7 +6,15 @@ import org.pipeman.penc.Penc;
 import java.util.List;
 
 public record Token(String username, long createdAt, long expiresAt) {
-    private static final Encryptor encryptor = new Encryptor(Config.conf().tokenEncryptorPassword);
+    private static Encryptor encryptor;
+
+    static {
+        setEncryptorPassword();
+    }
+
+    public static void setEncryptorPassword() {
+        encryptor = new Encryptor(Config.conf().tokenEncryptorPassword);
+    }
 
     public String encode() {
         return encryptor.encrypt(Penc.encode(username, String.valueOf(createdAt), String.valueOf(expiresAt)));
