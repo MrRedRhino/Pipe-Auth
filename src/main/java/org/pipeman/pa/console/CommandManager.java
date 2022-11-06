@@ -36,10 +36,13 @@ public class CommandManager {
         while (true) {
             String line = readLine();
             String[] split = line.split(" ");
-            ICommand command = commands.get(line);
+            String command = split[0];
+            if (command.isBlank()) continue;
+
+            ICommand iCommand = commands.get(command);
             boolean handled = false;
             try {
-                handled = command.execute(split[0], Arrays.copyOfRange(split, 1, split.length));
+                handled = iCommand.execute(Arrays.copyOfRange(split, 1, split.length));
             } catch (Exception ignored) {
             }
             if (!handled) System.out.println("Unknown command: " + line);
